@@ -1,12 +1,14 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   StyleSheet,
-  Animated,
+  ImageBackground,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
+import ShakeInput from "../components/ShakeInput";
 
 export default function GameScreen({ route, navigation }) {
   const { difficulty } = route.params;
@@ -19,38 +21,6 @@ export default function GameScreen({ route, navigation }) {
   const [error, setError] = useState(false);
   const [oikein, setOikein] = useState(0);
   const [vaarin, setVaarin] = useState(0);
-
-  const shakeAnimation = useRef(new Animated.Value(0)).current;
-  const triggerShake = () => {
-    shakeAnimation.setValue(0);
-    Animated.sequence([
-      Animated.timing(shakeAnimation, {
-        toValue: 10,
-        duration: 50,
-        useNativeDriver: true,
-      }),
-      Animated.timing(shakeAnimation, {
-        toValue: -10,
-        duration: 50,
-        useNativeDriver: true,
-      }),
-      Animated.timing(shakeAnimation, {
-        toValue: 6,
-        duration: 50,
-        useNativeDriver: true,
-      }),
-      Animated.timing(shakeAnimation, {
-        toValue: -6,
-        duration: 50,
-        useNativeDriver: true,
-      }),
-      Animated.timing(shakeAnimation, {
-        toValue: 0,
-        duration: 50,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  };
 
   // Генерация примера при загрузке и при смене сложности
   useEffect(() => {
@@ -117,59 +87,57 @@ export default function GameScreen({ route, navigation }) {
     } else {
       setVaarin(vaarin + 1);
       setError(true);
-      triggerShake();
     }
     setTextValue("");
   };
 
-  const inputStyle = error ? styles.inputError : styles.input;
-
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Laske seuraava</Text>
-      <View style={styles.taskRow}>
-        <Text style={styles.number}>{randomNumber1}</Text>
-        <Text style={styles.operator}>{operator}</Text>
-        <Text style={styles.number}>{randomNumber2}</Text>
-        <Text style={styles.operator}>=</Text>
-        <Animated.View style={{ transform: [{ translateX: shakeAnimation }] }}>
-          <TextInput
-            style={inputStyle}
-            keyboardType="numeric"
-            value={textValue}
-            onChangeText={setTextValue}
-            maxLength={3}
-            autoFocus
-          />
-        </Animated.View>
-      </View>
-
-      <TouchableOpacity style={styles.button} onPress={checkAnswer}>
-        <Text style={styles.buttonText}>Tarkista vastaus</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.buttonSecondary}
-        onPress={() => {
-          generateRandomNumber();
-          setError(false);
-          setTextValue("");
-        }}
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <ImageBackground
+        source={require("../assets/bg.png")}
+        style={styles.background}
+        resizeMode="cover"
+        blurRadius={8}
       >
-        <Text style={styles.buttonText}>Uusi tehtävä</Text>
-      </TouchableOpacity>
+        <View style={styles.content}>
+          <Text style={styles.title}>Laske seuraava</Text>
 
-      <TouchableOpacity
-        style={styles.buttonBack}
-        onPress={() => navigation.goBack()}
-      >
-        <Text style={styles.buttonText}>← Takaisin aloitukseen</Text>
-      </TouchableOpacity>
+          <View style={styles.taskRow}>
+            <Text style={styles.number}>{randomNumber1}</Text>
+            <Text style={styles.operator}>{operator}</Text>
+            <Text style={styles.number}>{randomNumber2}</Text>
+            <Text style={styles.operator}>=</Text>
+            <ShakeInput
+              value={textValue}
+              setValue={setTextValue}
+              error={error}
+            />
+          </View>
 
-      <Text style={styles.score}>
-        👍 Oikein: {oikein} 👎 Väärin: {vaarin}
-      </Text>
-    </View>
+          <TouchableOpacity style={styles.button} onPress={checkAnswer}>
+            <Text style={styles.buttonText}>Tarkista vastaus</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.buttonSecondary}
+            onPress={() => {
+              generateRandomNumber();
+              setError(false);
+              setTextValue("");
+            }}
+          >
+            <Text style={styles.buttonText}>Uusi tehtävä</Text>
+          </TouchableOpacity>
+
+          <Text style={styles.score}>
+            👍 Oikein: {oikein} 👎 Väärin: {vaarin}
+          </Text>
+        </View>
+      </ImageBackground>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -177,52 +145,42 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fefefe",
+  },
+  background: {
+    flex: 1,
+    justifyContent: "center",
+  },
+  content: {
+    flex: 1,
     alignItems: "center",
-    justifyContent: "flex-start", // вместо center — чтобы выравнивать сверху
-    padding: 20,
-    paddingTop: "30%", // сдвигаем вниз на 30% от высоты экрана
+    justifyContent: "center",
+    paddingHorizontal: 20,
+    paddingBottom: 40, // чтобы кнопки не прилипали к низу
   },
   title: {
-    fontSize: 28,
+    fontSize: 40,
     fontWeight: "bold",
     marginBottom: 30,
-    color: "#333",
+    color: "#000",
     textAlign: "center",
   },
   taskRow: {
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 30,
+    justifyContent: "center",
   },
   number: {
     fontSize: 30,
+    fontWeight: "bold",
     marginHorizontal: 5,
-    color: "#333",
+    color: "#000000ff",
   },
   operator: {
     fontSize: 30,
+    fontWeight: "bold",
     marginHorizontal: 5,
-    color: "#888",
-  },
-  input: {
-    borderWidth: 2,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    width: 70,
-    padding: 8,
-    fontSize: 24,
-    textAlign: "center",
-    backgroundColor: "#90EE90",
-  },
-  inputError: {
-    borderWidth: 2,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    width: 70,
-    padding: 8,
-    fontSize: 24,
-    textAlign: "center",
-    backgroundColor: "lightcoral",
+    color: "#000",
   },
   button: {
     backgroundColor: "#4CAF50",
@@ -230,13 +188,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderRadius: 10,
     marginVertical: 10,
+    minWidth: 200,
   },
   buttonSecondary: {
     backgroundColor: "#2196F3",
     paddingVertical: 12,
-    paddingHorizontal: 24,
+    paddingHorizontal: 16,
     borderRadius: 10,
     marginVertical: 10,
+    minWidth: 200,
   },
   buttonBack: {
     backgroundColor: "#888",
@@ -244,6 +204,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 10,
     marginTop: 20,
+    minWidth: 200,
   },
   buttonText: {
     color: "#fff",
@@ -253,7 +214,9 @@ const styles = StyleSheet.create({
   },
   score: {
     fontSize: 20,
-    marginTop: 20,
-    color: "#555",
+    marginTop: 30,
+    fontWeight: "bold",
+    color: "#000000ff",
+    textAlign: "center",
   },
 });

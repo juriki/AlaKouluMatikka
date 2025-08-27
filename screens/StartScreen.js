@@ -1,4 +1,5 @@
 import React from "react";
+import Тestscreen from "./testscreen";
 import {
   View,
   Text,
@@ -13,6 +14,7 @@ export default function StartScreen({ navigation }) {
       source={require("../assets/bg.png")} // путь к картинке
       style={styles.background}
       resizeMode="cover"
+      blurRadius={5}
     >
       <View style={styles.overlay}>
         <Text style={styles.title}>Valitse taso</Text>

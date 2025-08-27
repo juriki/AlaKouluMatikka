@@ -7,11 +7,31 @@ export default function ShakeInput({ value, setValue, error }) {
   const triggerShake = () => {
     shakeAnimation.setValue(0);
     Animated.sequence([
-      Animated.timing(shakeAnimation, { toValue: 10, duration: 50, useNativeDriver: true }),
-      Animated.timing(shakeAnimation, { toValue: -10, duration: 50, useNativeDriver: true }),
-      Animated.timing(shakeAnimation, { toValue: 6, duration: 50, useNativeDriver: true }),
-      Animated.timing(shakeAnimation, { toValue: -6, duration: 50, useNativeDriver: true }),
-      Animated.timing(shakeAnimation, { toValue: 0, duration: 50, useNativeDriver: true }),
+      Animated.timing(shakeAnimation, {
+        toValue: 10,
+        duration: 50,
+        useNativeDriver: true,
+      }),
+      Animated.timing(shakeAnimation, {
+        toValue: -10,
+        duration: 50,
+        useNativeDriver: true,
+      }),
+      Animated.timing(shakeAnimation, {
+        toValue: 6,
+        duration: 50,
+        useNativeDriver: true,
+      }),
+      Animated.timing(shakeAnimation, {
+        toValue: -6,
+        duration: 50,
+        useNativeDriver: true,
+      }),
+      Animated.timing(shakeAnimation, {
+        toValue: 0,
+        duration: 50,
+        useNativeDriver: true,
+      }),
     ]).start();
   };
 
