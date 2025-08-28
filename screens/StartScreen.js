@@ -39,6 +39,12 @@ export default function StartScreen({ navigation }) {
         >
           <Text style={styles.buttonText}>📐 3.+ luokka (1-100, kaikki)</Text>
         </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.buttonSecondary}
+          onPress={() => navigation.navigate("Statistics")}
+        >
+          <Text style={styles.buttonText}>Suoritukset</Text>
+        </TouchableOpacity>
       </View>
     </ImageBackground>
   );

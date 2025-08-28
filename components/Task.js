@@ -7,6 +7,7 @@ export default function Task({ number1, operator, number2 }) {
       <Text style={styles.number}>{number1}</Text>
       <Text style={styles.operator}>{operator}</Text>
       <Text style={styles.number}>{number2}</Text>
+      <Text style={styles.operator}>= </Text>
     </View>
   );
 }
@@ -26,6 +27,7 @@ const styles = StyleSheet.create({
   operator: {
     fontSize: 40,
     fontWeight: "bold",
-    marginHorizontal: 10,
+    marginHorizontal: 5,
+    color: "#000",
   },
 });

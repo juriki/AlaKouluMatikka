@@ -3,14 +3,15 @@ import {
   View,
   Text,
   TouchableOpacity,
-  StyleSheet,
   ImageBackground,
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
 import ShakeInput from "../components/ShakeInput";
+import Task from "../components/Task";
+import styles from "./GameScreen.styles";
 
-export default function GameScreen({ route, navigation }) {
+export default function GameScreen({ route }) {
   const { difficulty } = route.params;
 
   const [randomNumber1, setRandomNumber1] = useState(0);
@@ -44,6 +45,10 @@ export default function GameScreen({ route, navigation }) {
 
     const rOperator =
       availableOperators[Math.floor(Math.random() * availableOperators.length)];
+
+    if (rOperator === 3 || rOperator === 4) {
+      maxNumber = 10; // ограничение для умножения и деления
+    }
     let number1 = Math.floor(Math.random() * maxNumber) + 1;
     let number2 = Math.floor(Math.random() * maxNumber) + 1;
 
@@ -104,12 +109,12 @@ export default function GameScreen({ route, navigation }) {
       >
         <View style={styles.content}>
           <Text style={styles.title}>Laske seuraava</Text>
-
           <View style={styles.taskRow}>
-            <Text style={styles.number}>{randomNumber1}</Text>
-            <Text style={styles.operator}>{operator}</Text>
-            <Text style={styles.number}>{randomNumber2}</Text>
-            <Text style={styles.operator}>=</Text>
+            <Task
+              number1={randomNumber1}
+              operator={operator}
+              number2={randomNumber2}
+            />
             <ShakeInput
               value={textValue}
               setValue={setTextValue}
@@ -124,9 +129,9 @@ export default function GameScreen({ route, navigation }) {
           <TouchableOpacity
             style={styles.buttonSecondary}
             onPress={() => {
-              generateRandomNumber();
               setError(false);
               setTextValue("");
+              generateRandomNumber();
             }}
           >
             <Text style={styles.buttonText}>Uusi tehtävä</Text>
@@ -140,83 +145,3 @@ export default function GameScreen({ route, navigation }) {
     </KeyboardAvoidingView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fefefe",
-  },
-  background: {
-    flex: 1,
-    justifyContent: "center",
-  },
-  content: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 20,
-    paddingBottom: 40, // чтобы кнопки не прилипали к низу
-  },
-  title: {
-    fontSize: 40,
-    fontWeight: "bold",
-    marginBottom: 30,
-    color: "#000",
-    textAlign: "center",
-  },
-  taskRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 30,
-    justifyContent: "center",
-  },
-  number: {
-    fontSize: 30,
-    fontWeight: "bold",
-    marginHorizontal: 5,
-    color: "#000000ff",
-  },
-  operator: {
-    fontSize: 30,
-    fontWeight: "bold",
-    marginHorizontal: 5,
-    color: "#000",
-  },
-  button: {
-    backgroundColor: "#4CAF50",
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 10,
-    marginVertical: 10,
-    minWidth: 200,
-  },
-  buttonSecondary: {
-    backgroundColor: "#2196F3",
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 10,
-    marginVertical: 10,
-    minWidth: 200,
-  },
-  buttonBack: {
-    backgroundColor: "#888",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 10,
-    marginTop: 20,
-    minWidth: 200,
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "600",
-    textAlign: "center",
-  },
-  score: {
-    fontSize: 20,
-    marginTop: 30,
-    fontWeight: "bold",
-    color: "#000000ff",
-    textAlign: "center",
-  },
-});
