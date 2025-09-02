@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -22,8 +22,10 @@ export default function GameScreen({ route }) {
   const [error, setError] = useState(false);
   const [oikein, setOikein] = useState(0);
   const [vaarin, setVaarin] = useState(0);
+  const [lastTime, setLastTime] = useState(0); // время последней задачи
+  const [totalTime, setTotalTime] = useState(0); // суммарное время
+  const startTimeRef = useRef(Date.now()); // фиксируем время начала текущей задачи
 
-  // Генерация примера при загрузке и при смене сложности
   useEffect(() => {
     generateRandomNumber();
   }, [difficulty]);
@@ -47,8 +49,9 @@ export default function GameScreen({ route }) {
       availableOperators[Math.floor(Math.random() * availableOperators.length)];
 
     if (rOperator === 3 || rOperator === 4) {
-      maxNumber = 10; // ограничение для умножения и деления
+      maxNumber = 10;
     }
+
     let number1 = Math.floor(Math.random() * maxNumber) + 1;
     let number2 = Math.floor(Math.random() * maxNumber) + 1;
 
@@ -70,9 +73,14 @@ export default function GameScreen({ route }) {
     setRandomOperator(rOperator);
     setTextValue("");
     setError(false);
+    startTimeRef.current = Date.now(); // сбрасываем старт тайм при новой задаче
   };
 
   const checkAnswer = () => {
+    const elapsed = (Date.now() - startTimeRef.current) / 1000; // сек
+    setLastTime(elapsed);
+    setTotalTime((prev) => prev + elapsed);
+
     const answer = parseInt(textValue);
     let correct = false;
 
@@ -140,6 +148,15 @@ export default function GameScreen({ route }) {
           <Text style={styles.score}>
             👍 Oikein: {oikein} 👎 Väärin: {vaarin}
           </Text>
+
+          <View style={{ marginTop: 20 }}>
+            <Text style={styles.timeItem}>
+              Viimeinen tehtävä: {lastTime.toFixed(2)} sek
+            </Text>
+            <Text style={styles.timeItem}>
+              Yhteensä: {totalTime.toFixed(2)} sek
+            </Text>
+          </View>
         </View>
       </ImageBackground>
     </KeyboardAvoidingView>
